@@ -1,0 +1,3 @@
+[submodule "src/lib/pages/Anime"]
+	path = src/lib/pages/Anime
+	url = https://github.com/Akiko97/SVPTAnime.git
