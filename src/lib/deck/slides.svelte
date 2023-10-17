@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount} from 'svelte'
+  import { onMount } from 'svelte'
   import Reveal from 'reveal.js'
   import Markdown from 'reveal.js/plugin/markdown/markdown'
   import Highlight from 'reveal.js/plugin/highlight/highlight'
@@ -8,6 +8,7 @@
   import 'reveal.js/dist/theme/black.css'
   import 'reveal.js/plugin/highlight/monokai.css'
   import Presentation from './presentation.svelte'
+  import { events } from './events'
   onMount(() => {
     const deck = new Reveal({
       autoAnimateEasing: 'ease',
@@ -19,6 +20,13 @@
     deck.initialize({
       plugins: [ Markdown, Highlight, Notes ],
       slideNumber: 'c/t',
+    })
+    deck.on('slidechanged', event => {
+      if (event.indexh === 3 && event.indexv === 4) {
+        if (events.slidechanged !== null) {
+          events.slidechanged()
+        }
+      }
     })
   })
 </script>

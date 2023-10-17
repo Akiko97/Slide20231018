@@ -3,6 +3,43 @@
   import Code from '$lib/deck/code.svelte'
   import Markdown from '$lib/deck/markdown.svelte'
   import Notes from '$lib/deck/notes.svelte'
+  import Node from '$lib/pages/Anime/src/lib/Node.svelte'
+  import { events } from '$lib/deck/events'
+  import { onMount } from 'svelte'
+  import { demo } from './demo'
+  const register1 = { name: 'YMM6', size: 8, values: [0, 1, 2, 3, 4, 5, 6, 7], stroke: 'yellow', fill: 'aqua' }
+  const registers2 = [
+    { name: 'YMM0', size: 8, values: [0, 1, 2, 3, 4, 5, 6, 7], stroke: 'yellow', fill: 'purple' },
+    { name: 'YMM1', size: 8, values: [7, 6, 5, 4, 3, 2, 1, 0], stroke: 'yellow', fill: 'pink' },
+  ]
+  const anime = () => {
+    demo.exchange(registers2, 'YMM0', 0, 'YMM0', 4)
+    demo.exchange(registers2, 'YMM0', 1, 'YMM0', 5)
+    demo.exchange(registers2, 'YMM0', 2, 'YMM0', 6)
+    demo.exchange(registers2, 'YMM0', 3, 'YMM0', 7)
+    setTimeout(() => {
+      demo.duplicate(registers2, 'YMM0', 0, 'YMM1', 4)
+      demo.duplicate(registers2, 'YMM0', 1, 'YMM1', 5)
+      demo.duplicate(registers2, 'YMM0', 2, 'YMM1', 6)
+      demo.duplicate(registers2, 'YMM0', 3, 'YMM1', 7)
+      setTimeout(() => {
+        demo.assignment(registers2, 'YMM0', 0, 0, [])
+        demo.assignment(registers2, 'YMM0', 1, 1, [])
+        demo.assignment(registers2, 'YMM0', 2, 2, [])
+        demo.assignment(registers2, 'YMM0', 3, 3, [])
+        demo.assignment(registers2, 'YMM0', 4, 4, [])
+        demo.assignment(registers2, 'YMM0', 5, 5, [])
+        demo.assignment(registers2, 'YMM0', 6, 6, [])
+        demo.assignment(registers2, 'YMM0', 7, 7, [])
+        setTimeout(() => {
+          anime()
+        }, 1500)
+      }, 1500)
+    }, 1500)
+  }
+  onMount(() => {
+    events.slidechanged = anime
+  })
 </script>
 
 <Page animate restart>
@@ -95,13 +132,33 @@
           <div>
             Visualization of Registers (Graphics - Static)
           </div>
-          <div></div>
+          <div class="register_container">
+            <p>{register1.name}:</p>
+            <div id={`${register1.name}`} class="register_container">
+              {#each Array.from({length: register1.size}, (_, i) => i) as index}
+                <Node id={`${register1.name}_${register1.size}_${register1.size - 1 - index}_demo`} text={`${register1.values[register1.size - index - 1]}`} stroke={`${register1.stroke}`} fill={`${register1.fill}`} />
+              {/each}
+            </div>
+          </div>
         </li>
         <li>
           <div>
             Visualization of SIMD Instructions (Animation - Dynamic)
           </div>
-          <div></div>
+          <div>
+            <div>
+              {#each registers2 as register}
+                <div class="register_container">
+                  <p>{register.name}:</p>
+                  <div id={`${register.name}`} class="register_container">
+                    {#each Array.from({length: register.size}, (_, i) => i) as index}
+                      <Node id={`${register.name}_${register.size}_${register.size - 1 - index}_demo`} text={`${register.values[register.size - index - 1]}`} stroke={`${register.stroke}`} fill={`${register.fill}`} />
+                    {/each}
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
         </li>
         <li>
           Development Approach: Map each SIMD instruction to a set of behavioral abstractions, then use the visualization engine to execute the visual representation of this set of abstractions.
@@ -145,3 +202,10 @@
     </Notes>
   </Page>
 </Page>
+
+<style>
+  .register_container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+</style>
