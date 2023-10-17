@@ -1,5 +1,11 @@
 import { utilities } from '$lib/pages/Anime/src/utilities.js'
 import anime from 'animejs'
+import { writable } from 'svelte/store'
+
+export const registers2 = writable([
+  { name: 'YMM0', size: 8, values: [0, 1, 2, 3, 4, 5, 6, 7], stroke: 'yellow', fill: 'purple' },
+  { name: 'YMM1', size: 8, values: [7, 6, 5, 4, 3, 2, 1, 0], stroke: 'yellow', fill: 'pink' },
+])
 
 // @ts-ignore
 const __exchange = (registers, update, regName1, index1, regName2, index2) => {
@@ -133,52 +139,7 @@ const __duplicate = (registers, update, regName, index, fromRegName, fromIndex) 
     },
   })
 }
-// @ts-ignore
-export const exchange = (registers, regName1, index1, regName2, index2) => {
-  __exchange(registers, () => {
-    // @ts-ignore
-    const reg1 = registers.find(register => register.name === regName1)
-    // @ts-ignore
-    const reg2 = registers.find(register => register.name === regName2)
-    const tmp = reg1.values[index1]
-    reg1.values[index1] = reg2.values[index2]
-    reg2.values[index2] = tmp
-  }, regName1, index1, regName2, index2)
-}
-// @ts-ignore
-export const assignment = (registers, regName, index, newValue, fromRegs = []) => {
-  const _assignment = () => {
-    __assignment(registers, () => {
-      // @ts-ignore
-      const reg = registers.find(register => register.name === regName)
-      reg.values[index] = newValue
-    }, regName, index, newValue)
-  }
-  const allRegsAreSame = fromRegs.every(reg => {
-    return reg.name === regName
-  })
-  if (allRegsAreSame) {
-    _assignment()
-  }
-  else {
-    fromRegs.forEach(fromReg => {
-      __duplicate(registers, () => {
-        _assignment()
-      }, regName, index, fromReg.name, fromReg.index)
-    })
-  }
-}
-// @ts-ignore
-export const duplicate = (registers, regName, index, fromRegName, fromIndex) => {
-  __duplicate(registers, () => {
-    // @ts-ignore
-    const reg = registers.find(register => register.name === regName)
-    // @ts-ignore
-    const fromReg = registers.find(register => register.name === fromRegName)
-    reg.values[index] = fromReg.values[fromIndex]
-  }, regName, index, fromRegName, fromIndex)
-}
 
 export const demo = {
-  exchange, duplicate, assignment
+  __exchange, __duplicate, __assignment
 }

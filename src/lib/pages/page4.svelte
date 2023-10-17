@@ -6,34 +6,87 @@
   import Node from '$lib/pages/Anime/src/lib/Node.svelte'
   import { events } from '$lib/deck/events'
   import { onMount } from 'svelte'
-  import { demo } from './demo'
+  import { demo, registers2 } from './demo'
   const register1 = { name: 'YMM6', size: 8, values: [0, 1, 2, 3, 4, 5, 6, 7], stroke: 'yellow', fill: 'aqua' }
-  const registers2 = [
-    { name: 'YMM0', size: 8, values: [0, 1, 2, 3, 4, 5, 6, 7], stroke: 'yellow', fill: 'purple' },
-    { name: 'YMM1', size: 8, values: [7, 6, 5, 4, 3, 2, 1, 0], stroke: 'yellow', fill: 'pink' },
-  ]
+  // @ts-ignore
+  export const exchange = (regName1, index1, regName2, index2) => {
+    // @ts-ignore
+    demo.__exchange($registers2, () => {
+      registers2.update(regs => {
+        const reg1 = regs.find(register => register.name === regName1)
+        const reg2 = regs.find(register => register.name === regName2)
+        // @ts-ignore
+        const tmp = reg1.values[index1]
+        // @ts-ignore
+        reg1.values[index1] = reg2.values[index2]
+        // @ts-ignore
+        reg2.values[index2] = tmp
+        return regs
+      })
+    }, regName1, index1, regName2, index2)
+  }
+  // @ts-ignore
+  export const assignment = (regName, index, newValue, fromRegs = []) => {
+    const _assignment = () => {
+      // @ts-ignore
+      demo.__assignment($registers2, () => {
+        registers2.update(regs => {
+          const reg = regs.find(register => register.name === regName)
+          // @ts-ignore
+          reg.values[index] = newValue
+          return regs
+        })
+      }, regName, index, newValue)
+    }
+    const allRegsAreSame = fromRegs.every(reg => {
+      // @ts-ignore
+      return reg.name === regName
+    })
+    if (allRegsAreSame) {
+      _assignment()
+    }
+    else {
+      fromRegs.forEach(fromReg => {
+        // @ts-ignore
+        demo.__duplicate($registers2, () => {
+          _assignment()
+          // @ts-ignore
+        }, regName, index, fromReg.name, fromReg.index)
+      })
+    }
+  }
+  // @ts-ignore
+  export const duplicate = (regName, index, fromRegName, fromIndex) => {
+    // @ts-ignore
+    demo.__duplicate($registers2, () => {
+      registers2.update(regs => {
+        const reg = regs.find(register => register.name === regName)
+        const fromReg = regs.find(register => register.name === fromRegName)
+        // @ts-ignore
+        reg.values[index] = fromReg.values[fromIndex]
+        return regs
+      })
+    }, regName, index, fromRegName, fromIndex)
+  }
   const anime = () => {
-    demo.exchange(registers2, 'YMM0', 0, 'YMM0', 4)
-    demo.exchange(registers2, 'YMM0', 1, 'YMM0', 5)
-    demo.exchange(registers2, 'YMM0', 2, 'YMM0', 6)
-    demo.exchange(registers2, 'YMM0', 3, 'YMM0', 7)
+    exchange('YMM0', 0, 'YMM0', 4)
+    exchange('YMM0', 1, 'YMM0', 5)
+    exchange('YMM0', 2, 'YMM0', 6)
+    exchange('YMM0', 3, 'YMM0', 7)
     setTimeout(() => {
-      demo.duplicate(registers2, 'YMM0', 0, 'YMM1', 4)
-      demo.duplicate(registers2, 'YMM0', 1, 'YMM1', 5)
-      demo.duplicate(registers2, 'YMM0', 2, 'YMM1', 6)
-      demo.duplicate(registers2, 'YMM0', 3, 'YMM1', 7)
+      duplicate('YMM0', 0, 'YMM1', 4)
+      duplicate('YMM0', 1, 'YMM1', 5)
+      duplicate('YMM0', 2, 'YMM1', 6)
+      duplicate('YMM0', 3, 'YMM1', 7)
       setTimeout(() => {
-        demo.assignment(registers2, 'YMM0', 0, 0, [])
-        demo.assignment(registers2, 'YMM0', 1, 1, [])
-        demo.assignment(registers2, 'YMM0', 2, 2, [])
-        demo.assignment(registers2, 'YMM0', 3, 3, [])
-        demo.assignment(registers2, 'YMM0', 4, 4, [])
-        demo.assignment(registers2, 'YMM0', 5, 5, [])
-        demo.assignment(registers2, 'YMM0', 6, 6, [])
-        demo.assignment(registers2, 'YMM0', 7, 7, [])
-        setTimeout(() => {
-          anime()
-        }, 1500)
+        assignment('YMM0', 0, 0, [])
+        assignment('YMM0', 1, 1, [])
+        assignment('YMM0', 2, 2, [])
+        assignment('YMM0', 3, 3, [])
+        assignment('YMM0', 4, 4, [])
+        assignment('YMM0', 5, 5, [])
+        assignment('YMM0', 6, 6, [])
+        assignment('YMM0', 7, 7, [])
       }, 1500)
     }, 1500)
   }
@@ -147,7 +200,7 @@
           </div>
           <div>
             <div>
-              {#each registers2 as register}
+              {#each $registers2 as register}
                 <div class="register_container">
                   <p>{register.name}:</p>
                   <div id={`${register.name}`} class="register_container">

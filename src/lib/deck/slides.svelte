@@ -9,6 +9,7 @@
   import 'reveal.js/plugin/highlight/monokai.css'
   import Presentation from './presentation.svelte'
   import { events } from './events'
+  let intervalID:any = null
   onMount(() => {
     const deck = new Reveal({
       autoAnimateEasing: 'ease',
@@ -23,9 +24,15 @@
     })
     deck.on('slidechanged', event => {
       if (event.indexh === 3 && event.indexv === 4) {
-        if (events.slidechanged !== null) {
-          events.slidechanged()
-        }
+        intervalID = setInterval(() => {
+          if (events.slidechanged !== null) {
+            events.slidechanged()
+          }
+        }, 4500)
+      }
+      else if (intervalID !== null) {
+        clearInterval(intervalID)
+        intervalID = null
       }
     })
   })
