@@ -6,7 +6,7 @@
   import Editor from '$lib/pages/Anime/src/lib/Editor.svelte'
   import Visualization from '$lib/pages/Anime/src/lib/Visualization.svelte'
   import Button from '$lib/pages/Anime/src/lib/Button.svelte'
-  import { registers } from '$lib/pages/Anime/src/store.js'
+  import { code, registers } from '$lib/pages/Anime/src/store.js'
   import { Instructions } from '$lib/pages/Anime/src/instructions.js'
   import { onMount } from 'svelte'
   registers.update(() => [
@@ -35,28 +35,34 @@
     highlightInline:(lineNumber:number,from:number,to:number)=>void,
     removeHighlight:()=>void
   }
-  const code = 'vperm2f128 ymm0, ymm0, ymm0, 0x01\n' +
-    'movaps ymm2, ymm0\n' +
-    'movaps ymm3, ymm1\n' +
-    'vshufps ymm4, ymm2, ymm3, 0x4E\n' +
-    'vperm2f128 ymm5, ymm2, ymm3, 0x20\n' +
-    'vpermq ymm5, ymm5, 0x4E\n' +
-    'vxorps ymm0, ymm0, ymm0\n' +
-    'vxorps ymm0, ymm1, ymm2'
+  code.update(() => {
+    return 'vperm2f128 ymm0, ymm0, ymm0, 0x01\n' +
+      'movaps ymm2, ymm0\n' +
+      'movaps ymm3, ymm1\n' +
+      'vshufps ymm4, ymm2, ymm3, 0x4E\n' +
+      'vperm2f128 ymm5, ymm2, ymm3, 0x20\n' +
+      'vpermq ymm5, ymm5, 0x4E\n' +
+      'vxorps ymm0, ymm0, ymm0\n' +
+      'vxorps ymm0, ymm1, ymm2'
+  })
   const executeInstruction = (instructionStr:string) => {
     const tokens = instructionStr.split(/[\s,]+/)
     const instructionName = tokens[0]
     const args = tokens.slice(1)
     if (typeof i[instructionName] === 'function') {
       i[instructionName].apply(i, args)
-    } else {
+    }
+    else if (instructionName[0] === ';' || instructionName === '') {
+      console.log('Not runnable code')
+    }
+    else {
       console.error(`Unknown instruction: ${instructionName}`)
     }
   }
   let step = 1
   const run = () => {
     editorRef.removeHighlight()
-    if (step > code.split('\n').length) {
+    if (step > $code.split('\n').length) {
       step = 1
       registers.update(() => [
         { name: 'YMM0', size: 8, values: [8, 1, 3, 5, 7, 9, 2, 4] },
@@ -69,7 +75,7 @@
     }
     else {
       editorRef.highlightLine(step)
-      const instructionStr = code.split('\n')[step - 1]
+      const instructionStr = $code.split('\n')[step - 1]
       executeInstruction(instructionStr)
       step++
     }
@@ -95,7 +101,7 @@
     </div>
     <div class="w-[100%] h-[500px] flex text-xl">
       <div class="w-[40%] text-left p-[5px]">
-        <Editor bind:this={editorRef} {code} />
+        <Editor bind:this={editorRef} />
       </div>
       <div class="w-[60%] p-[5px]">
         <Visualization bind:this={visualizationRef} />
