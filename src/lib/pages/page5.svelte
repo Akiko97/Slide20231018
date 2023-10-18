@@ -175,7 +175,7 @@
       </div>
     </div>
     <Notes>
-      Currently, the instruction visualization functionality has been realized, and we can see a small example. This is an example of visualizing a SIMD code snippet in a program calculating matrix multiplication.
+      Currently, the instruction visualization functionality has been realized, and we can see a small example. This is an example of visualizing a SIMD code snippet in a program calculating matrix multiplication. It's worth noting that I completed this code with the help of this visualization tool.
     </Notes>
   </Page>
 
@@ -194,8 +194,8 @@
       </ul>
     </div>
     <Notes>
-      The roadmap for future development within this project is clearly earmarked into two primary objectives. Initially, the focus is on completing the instruction generation functionality, leveraging deep learning to automate and enhance the accuracy of translating graphical actions into corresponding SIMD instructions. <br><br>
-      Subsequently, the plan is to broaden the spectrum of SIMD instructions that the visualization engine can handle. By expanding support for a more extensive set of SIMD instructions, the visualization engine will become more robust and versatile, providing users with a comprehensive platform to observe, verify, and interact with SIMD code.
+      The roadmap for future development within this project is clearly earmarked into two mainly objectives. First, the focus is on completing the instruction generation functionality with deep learning. The key point is to automate generation SIMD code and enhance the correctness of translating graphical actions into corresponding SIMD instructions. <br><br>
+      Subsequently, the plan is to broaden the range of SIMD instructions that the visualization engine can handle. By expanding support for a more extensive set of SIMD instructions, the visualization engine will become more robust and versatile, providing users with a comprehensive platform to observe, verify, and interact with SIMD code.
     </Notes>
   </Page>
 </Page>
